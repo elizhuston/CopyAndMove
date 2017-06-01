@@ -1,14 +1,15 @@
 
 package copyAndMove;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 
 public class CopyAndMove {
 
-//	public static String outPath = null;
-//	public static String filePath = "example.txt";
+	// public static String outPath = null;
+	// public static String filePath = "example.txt";
 	public static byte[] buf = new byte[100];
 	public static byte[] data = null;
 	public static int dataIdx = 0;
@@ -24,23 +25,20 @@ public class CopyAndMove {
 		}
 	}
 
-	public static void read(String filePath) {
-		try {
-			RandomAccessFile f = new RandomAccessFile(filePath, "r");
-			data = new byte[(int) f.length()];
-			while (true) {
-				int nBytes = f.read(buf);
-				if (nBytes == -1) {// read returns -1 when end of file
-					break;
-				}
-				for (int i = 0; i < nBytes; i++) {
-					data[dataIdx] = buf[i];
-					dataIdx++;
-				}
+	public static void read(String filePath) throws FileNotFoundException, IOException {
+
+		RandomAccessFile f = new RandomAccessFile(filePath, "r");
+		data = new byte[(int) f.length()];
+		while (true) {
+			int nBytes = f.read(buf);
+			if (nBytes == -1) {// read returns -1 when end of file
+				break;
+			}
+			for (int i = 0; i < nBytes; i++) {
+				data[dataIdx] = buf[i];
+				dataIdx++;
 			}
 			f.close();
-		} catch (IOException ex) {
-			System.out.println(ex);
 		}
 		Charset cs = Charset.forName("UTF-8");
 		String s = new String(data, cs);
@@ -48,14 +46,22 @@ public class CopyAndMove {
 	}
 
 	public static void main(String[] args) {
-		String fileIn= null;
-		String fileOut= null;
-		
-		if (args.length ==2) {
- 		 fileIn = args[0];
- 		 fileOut = args[1];
+		String fileIn = null;
+		String fileOut = null;
+
+		if (args.length == 2) {
+			fileIn = args[0];
+			fileOut = args[1];
 		}
-		CopyAndMove.read(fileIn);
-		CopyAndMove.write(data, fileOut);
+		else{ System.out.println("Please specify two parameters, Inputfile and OutputFile");}
+			
+		try {
+			CopyAndMove.read(fileIn);
+			CopyAndMove.write(data, fileOut);
+		} catch (FileNotFoundException ex) {
+			System.out.println("File was not found, please verify " + fileIn + " exists.");
+		} catch (IOException ex) {
+				System.out.println(ex);
+		}
 	}
 }
